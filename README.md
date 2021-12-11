@@ -20,5 +20,5 @@
 ![](screenshot/authdump1.png)
 
 ### Dump every images 
-![](screenshot/dump_all.png)
+![](screenshot/authdump_all.png)
 
