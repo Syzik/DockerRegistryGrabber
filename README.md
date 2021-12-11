@@ -3,7 +3,7 @@
 ## Without auth 
 
 ### Listing available images  
-![](./screendshot/list.png)
+![](./screenshot/list.png)
 
 ### Dump a specific image 
 ![](./screenshot/dump1.png)
