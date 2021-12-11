@@ -3,22 +3,22 @@
 ## Without auth 
 
 ### Listing available images  
-![](screendshot/list.png)
+![](./screendshot/list.png)
 
 ### Dump a specificly image 
-![](screendshot/dump1.png)
+![](./screenshot/dump1.png)
 
 ### Dump every images 
-![](screendshot/dump_all.png)
+![](./screenshot/dump_all.png)
 
 ## With Basic AUTH 
 
 ### Listing available images  
-![](screendshot/authlist.png)
+![](screenshot/authlist.png)
 
 ### Dump a specificly image 
-![](screendshot/authdump1.png)
+![](screenshot/authdump1.png)
 
 ### Dump every images 
-![](screendshot/dump_all.png)
+![](screenshot/dump_all.png)
 
