@@ -5,7 +5,7 @@
 ### Listing available images  
 ![](./screendshot/list.png)
 
-### Dump a specificly image 
+### Dump a specific image 
 ![](./screenshot/dump1.png)
 
 ### Dump every images 
@@ -16,7 +16,7 @@
 ### Listing available images  
 ![](screenshot/authlist.png)
 
-### Dump a specificly image 
+### Dump a specific image 
 ![](screenshot/authdump1.png)
 
 ### Dump every images 
