@@ -96,7 +96,7 @@ def getBlob(docker, url, port, username=None, password=None):
             sha256 = []
             cpt = 1
             for sha in blobSum:
-                console.print(f"[+] blobSum found {cpt}", end='\r', style="OK")
+                console.print(f"[+] BlobSum found {cpt}", end='\r', style="OK")
                 cpt += 1
                 a = re.split(':|,',sha)
                 sha256.append(a[2].strip("\""))
