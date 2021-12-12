@@ -9,7 +9,7 @@ sudo docker run \
 
 sudo docker run -d \
   -p 5000:5000 \
-  --restart=always \
+  --restart=unless-stopped\
   --name registry \
   -v "$(pwd)"/auth:/auth \
   -e "REGISTRY_AUTH=htpasswd" \

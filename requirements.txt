@@ -1,2 +1,4 @@
 requests==2.25.1
 argparse
+rich
+urllib3
