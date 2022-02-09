@@ -3,12 +3,21 @@
 import requests
 import argparse
 import re
+import json
 import sys
 import os
 from base64 import b64encode
 import urllib3
 from rich.console import Console
 from rich.theme import Theme
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+req = requests.Session()
+
+http_proxy = ""
+os.environ['HTTP_PROXY'] = http_proxy
+os.environ['HTTPS_PROXY'] = http_proxy
+
 
 custom_theme = Theme({
     "OK": "bright_green",
@@ -43,10 +52,10 @@ def printList(dockerlist):
 def tryReq(url, username=None,password=None):
     try:
         if username and password:
-            r = requests.get(url,verify=False, auth=(username,password))
+            r = req.get(url,verify=False, auth=(username,password))
             r.raise_for_status()
         else:
-            r = requests.get(url)
+            r = req.get(url,verify=False)
             r.raise_for_status()
     except requests.exceptions.HTTPError as errh:
         console.print(f"Http Error: {errh}", style="NOK")
@@ -80,7 +89,11 @@ def downloadSha(url, port, docker, sha256, username=None, password=None):
                     out.write(bits)
 
 def getBlob(docker, url, port, username=None, password=None):
-    url = f"{url}:{str(port)}/v2/{docker}/manifests/latest"
+    tags = f"{url}:{str(port)}/v2/{docker}/tags/list"
+    rr = tryReq(tags,username,password)
+    data = rr.json()
+    image = data["tags"][0]
+    url = f"{url}:{str(port)}/v2/{docker}/manifests/"+image+""
     r = tryReq(url,username,password) 
     blobSum = []
     if r.status_code == 200:
