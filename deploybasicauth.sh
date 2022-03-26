@@ -21,6 +21,9 @@ sudo docker run -d \
   registry
 
 echo -n "testuser:testpassword"
-sudo docker login 127.0.0.1:5000
-
-sudo docker push 127.0.0.1:5000/my-ubuntu
+sudo docker login localhost:5000
+sudo docker pull ubuntu
+sudo docker image tag ubuntu localhost:5000/my-ubuntu
+sudo docker image tag ubuntu localhost:5000/my-ubuntu2
+sudo docker push localhost:5000/my-ubuntu
+sudo docker push localhost:5000/my-ubuntu2
