@@ -3,7 +3,7 @@
     A python tool to easly enum and dump images on a Docker Registry.
 </p>
 <p align="center">
-<img  alt="X" src="https://img.shields.io/twitter/follow/SyzikSecu?label=SyzikSecu&style=social">
+<a href="https://twitter.com/intent/follow?screen_name=SyzikSecu"><img  alt="X" src="https://img.shields.io/twitter/follow/SyzikSecu?label=SyzikSecu&style=social" /></a>
 <img alt="Static Badge" src="https://img.shields.io/badge/python-3.7+-blue.svg">
 </p>
 
