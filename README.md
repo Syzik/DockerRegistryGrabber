@@ -63,19 +63,19 @@ python drg.py http://127.0.0.1 --dump_all
 
 #### Listing available images
 ```
-python drg.py http://127.0.0.1 -U 'testuser' -P 'testpassword' --list
+python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --list
 ```
 ![](screenshot/authlist.png)
 
 #### Dump an image 
 ```
-python drg.py http://127.0.0.1 -U 'testuser' -P 'testpassword' --dump my-ubuntu
+python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump my-ubuntu
 ```
 ![](screenshot/authdump1.png)
 
 #### Dump images 
 ```
-python drg.py http://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
+python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
 ```
 ![](screenshot/authdump_all.png)
 
