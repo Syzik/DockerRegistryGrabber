@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import requests
 import argparse
 import re
-import json
 import sys
 import os
-from base64 import b64encode
 import urllib3
 from rich.console import Console
 from rich.theme import Theme
+from argparse import RawTextHelpFormatter
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 req = requests.Session()
@@ -24,35 +24,27 @@ custom_theme = Theme({
     "NOK": "red3"
 })
 
-def manageArgs():
-    parser = argparse.ArgumentParser()
-        # Positionnal args
-    parser.add_argument("url", help="URL")
-        # Optionnal args
-    parser.add_argument("-p", dest='port', metavar='port', type=int, default=5000, help="port to use (default : 5000)")
-        ## Authentification
-    auth = parser.add_argument_group("Authentication")
-    auth.add_argument('-U', dest='username', type=str, default="", help='Username')
-    auth.add_argument('-P', dest='password', type=str, default="", help='Password')
-        ### Args Action en opposition
-    action = parser.add_mutually_exclusive_group()
-    action.add_argument("--dump", metavar="DOCKERNAME", dest='dump', type=str,  help="DockerName")
-    action.add_argument("--list", dest='list', action="store_true")
-    action.add_argument("--dump_all",dest='dump_all',action="store_true")
-    args = parser.parse_args()
-    return args
-
 def printList(dockerlist):
+    #print("printlist func")
     for element in dockerlist:
         if element:
             console.print(f"[+] {element}", style="OK")
         else:
             console.print(f"[-] No Docker found", style="NOK")
 
-def tryReq(url, username=None,password=None):
+def tryReq(url, username=None, password=None, header=None):
+    #print("tryreq func")
     try:
-        if username and password:
+        if header and username and password:
+            auth = {'Authorization': 'Bearer ' + header}
+            r = req.get(url,verify=False, auth=(username,password),headers=auth)
+            r.raise_for_status()
+        elif username and password:
             r = req.get(url,verify=False, auth=(username,password))
+            r.raise_for_status()
+        elif header:
+            auth = {'Authorization': 'Bearer ' + header}
+            r = req.get(url,verify=False, headers=auth)
             r.raise_for_status()
         else:
             r = req.get(url,verify=False)
@@ -75,26 +67,28 @@ def createDir(directoryName):
     if not os.path.exists(directoryName):
         os.makedirs(directoryName)
 
-def downloadSha(url, port, docker, sha256, username=None, password=None):
+def downloadSha(url, port, docker, sha256, username=None, password=None,  header=None):
+    #print("dawloadsha func")
     createDir(docker)
     directory = f"./{docker}/"
     for sha in sha256:
         filenamesha = f"{sha}.tar.gz"
         geturl = f"{url}:{str(port)}/v2/{docker}/blobs/sha256:{sha}"
-        r = tryReq(geturl,username,password) 
+        r = tryReq(geturl, username, password, header) 
         if r.status_code == 200:
             console.print(f"    [+] Downloading : {sha}", style="OK")
             with open(directory+filenamesha, 'wb') as out:
                 for bits in r.iter_content():
                     out.write(bits)
 
-def getBlob(docker, url, port, username=None, password=None):
+def getBlob(docker, url, port, username=None, password=None, header=None):
+    #print("getblob func")
     tags = f"{url}:{str(port)}/v2/{docker}/tags/list"
-    rr = tryReq(tags,username,password)
+    rr = tryReq(tags, username, password, header)
     data = rr.json()
     image = data["tags"][0]
     url = f"{url}:{str(port)}/v2/{docker}/manifests/"+image+""
-    r = tryReq(url,username,password) 
+    r = tryReq(url, username, password, header) 
     blobSum = []
     if r.status_code == 200:
         regex = re.compile('blobSum')
@@ -116,10 +110,11 @@ def getBlob(docker, url, port, username=None, password=None):
             print()
             return sha256
 
-def enumList(url, port, username=None, password=None,checklist=None):
+def enumList(url, port, username=None, password=None, header=None):
+    #print("enumlist func")
     url = f"{url}:{str(port)}/v2/_catalog"
     try :
-        r = tryReq(url,username,password) 
+        r = tryReq(url, username, password, header) 
         if r.status_code == 200:
             catalog2 = re.split(':|,|\n ',r.text)
             catalog3 = []
@@ -132,31 +127,68 @@ def enumList(url, port, username=None, password=None,checklist=None):
         exit()
 
 def dump(args):
-    sha256 = getBlob(args.dump, args.url, args.port, args.username, args.password)
+    #print("dump func")
+    sha256 = getBlob(args.dump, args.url, args.port, args.username, args.password, args.header)
     console.print(f"[+] Dumping {args.dump}", style="OK")
-    downloadSha(args.url, args.port, args.dump, sha256, args.username, args.password)
+    downloadSha(args.url, args.port, args.dump, sha256, args.username, args.password, args.header)
 
 def dumpAll(args):
-    dockerlist = enumList(args.url, args.port, args.username,args.password)
+    #print("dumpall func")
+    dockerlist = enumList(args.url, args.port, args.username, args.password, args.header)
     for docker in dockerlist[1:]:
-        sha256 = getBlob(docker, args.url, args.port, args.username,args.password)
+        sha256 = getBlob(docker, args.url, args.port, args.username, args.password, args.header)
         console.print(f"[+] Dumping {docker}", style="OK")
-        downloadSha(args.url, args.port,docker,sha256,args.username,args.password)
+        downloadSha(args.url, args.port, docker, sha256, args.username, args.password, args.header)
 
 def options():
     args = manageArgs()
     if args.list:
-        enumList(args.url, args.port,args.username,args.password)
+        enumList(args.url, args.port, args.username, args.password, args.header)
     elif args.dump_all:
         dumpAll(args)
     elif args.dump:
         dump(args)
 
+def manageArgs():
+    parser = argparse.ArgumentParser(description=f"""     ____   ____    ____ 
+    |  _ \ |  _ \  / ___|
+    | | | || |_) || |  _ 
+    | |_| ||  _ < | |_| |
+    |____/ |_| \_\ \____|
+     Docker Registry grabber tool v2 
+     by @SyzikSecu""",
+     epilog="""
+Example commands:
+  python drg.py http://127.0.0.1 --list
+  python drg.py http://127.0.0.1 --dump my-ubuntu
+  python drg.py http://127.0.0.1 --dump_all
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --list
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump my-ubuntu
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --list
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --dump my-ubuntu
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --dump_all
+""", formatter_class=RawTextHelpFormatter)
+    #parser.epilog
+    # Positionnal args
+    parser.add_argument("url", help="URL")
+    # Optionnal args
+    parser.add_argument("-p", dest='port', metavar='port', type=int, default=5000, help="port to use (default : 5000)")
+    ## Authentification
+    auth = parser.add_argument_group("Authentication")
+    auth.add_argument('-U', dest='username', type=str, default="", help='Username')
+    auth.add_argument('-P', dest='password', type=str, default="", help='Password')
+    auth.add_argument("-A", dest='header', metavar='header', type=str, default="", help="Authorization bearer token")
+    ### Args Action en opposition
+    action_group = parser.add_argument_group("Actions")
+    action = action_group.add_mutually_exclusive_group()
+    action.add_argument("--list", dest='list', action="store_true")
+    action.add_argument("--dump_all",dest='dump_all',action="store_true")
+    action.add_argument("--dump", metavar="DOCKERNAME", dest='dump', type=str,  help="DockerName")
+    args = parser.parse_args()
+    return args
+
 if __name__ == '__main__':
-    print(f"[+]======================================================[+]")
-    print(f"[|]    Docker Registry Grabber v1       @SyzikSecu       [|]")
-    print(f"[+]======================================================[+]")
-    print()
     urllib3.disable_warnings()
     console = Console(theme=custom_theme)
     options()
