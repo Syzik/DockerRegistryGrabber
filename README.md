@@ -79,3 +79,21 @@ python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
 ```
 ![](screenshot/authdump_all.png)
 
+### With Authorization bearer Token
+
+#### Listing available images
+```
+python drg.py https://127.0.0.1 -A '<Token>' --list
+```
+![](screenshot/authtokenlist.png)
+
+#### Dump an image 
+```
+python drg.py https://127.0.0.1 -A '<Auth Bearer Token>' --dump hosting-app
+```
+![](screenshot/authtokendump.png)
+
+#### Dump an images
+```
+python drg.py https://127.0.0.1 -A '<Auth Bearer Token>' --dump_all
+```
