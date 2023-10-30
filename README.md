@@ -18,9 +18,15 @@ python -m pip install -r requirements.txt
 ---
 ### Usage 
 ```
-python drg.py -h                                                                      
+usage: drg.py [-h] [-p port] [-U USERNAME] [-P PASSWORD] [-A header] [--list | --dump_all | --dump DOCKERNAME] url
 
-usage: drg.py [-h] [-p port] [-U USERNAME] [-P PASSWORD] [--dump DOCKERNAME | --list | --dump_all] url
+     ____   ____    ____ 
+    |  _ \ |  _ \  / ___|
+    | | | || |_) || |  _ 
+    | |_| ||  _ < | |_| |
+    |____/ |_| \_\ \____|
+     Docker Registry grabber tool v2 
+     by @SyzikSecu
 
 positional arguments:
   url                URL
@@ -28,13 +34,27 @@ positional arguments:
 options:
   -h, --help         show this help message and exit
   -p port            port to use (default : 5000)
-  --dump DOCKERNAME  DockerName
-  --list
-  --dump_all
 
 Authentication:
   -U USERNAME        Username
   -P PASSWORD        Password
+  -A header          Authorization bearer token
+
+Actions:
+  --list
+  --dump_all
+  --dump DOCKERNAME  DockerName
+
+Example commands:
+  python drg.py http://127.0.0.1 --list
+  python drg.py http://127.0.0.1 --dump my-ubuntu
+  python drg.py http://127.0.0.1 --dump_all
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --list
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump my-ubuntu
+  python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --list
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --dump my-ubuntu
+  python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --dump_all
 ```
 
 ### Without authentification 
