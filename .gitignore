@@ -1,0 +1,6 @@
+.ruff_cache/
+certs/
+auth/
+my-ubuntu/
+my-ubuntu2/
+poetry.lock
