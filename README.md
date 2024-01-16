@@ -1,6 +1,6 @@
 <h1 align="center">DockerRegistryGrabber</h1>
 <p align="center">
-    A python tool to easly enum and dump images on a Docker Registry.
+    A python tool to easly enum and dump images a Docker Registry.
 </p>
 <p align="center">
 <a href="https://twitter.com/intent/follow?screen_name=SyzikSecu"><img  alt="X" src="https://img.shields.io/twitter/follow/SyzikSecu?label=SyzikSecu&style=social" /></a>
