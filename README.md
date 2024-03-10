@@ -113,7 +113,7 @@ python drg.py https://127.0.0.1 -A '<Auth Bearer Token>' --dump hosting-app
 ```
 ![](screenshot/authtokendump.png)
 
-#### Dump an images
+#### Dump images
 ```
 python drg.py https://127.0.0.1 -A '<Auth Bearer Token>' --dump_all
 ```
