@@ -3,11 +3,11 @@ mkdir certs
 
 openssl req -newkey rsa:2048 -nodes -keyout ./certs/domain.key -x509 -days 365 -out ./certs/domain.crt
 
-sudo docker run \
+docker run \
   --entrypoint htpasswd \
   httpd:2 -Bbn testuser testpassword > auth/htpasswd
 
-sudo docker run -d \
+docker run -d \
   -p 5000:5000 \
   --restart=unless-stopped\
   --name registry \
@@ -21,9 +21,9 @@ sudo docker run -d \
   registry
 
 echo -n "testuser:testpassword"
-sudo docker login localhost:5000
-sudo docker pull ubuntu
-sudo docker image tag ubuntu localhost:5000/my-ubuntu
-sudo docker image tag ubuntu localhost:5000/my-ubuntu2
-sudo docker push localhost:5000/my-ubuntu
-sudo docker push localhost:5000/my-ubuntu2
+docker login localhost:5000
+docker pull ubuntu
+docker image tag ubuntu localhost:5000/my-ubuntu
+docker image tag ubuntu localhost:5000/my-ubuntu2
+docker push localhost:5000/my-ubuntu
+docker push localhost:5000/my-ubuntu2

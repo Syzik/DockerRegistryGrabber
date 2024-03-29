@@ -20,6 +20,7 @@ os.environ["HTTPS_PROXY"] = http_proxy
 
 custom_theme = Theme({
     "OK": "bright_green",
+    "MOK":"magenta",
     "NOK": "red3"
 })
 
@@ -30,21 +31,51 @@ def printList(dockerlist):
         else:
             console.print("[-] No Docker found", style="NOK")
 
+def checkUnauthorized(r, r2=None):
+    if r.status_code == 401 and r.headers.get("Www-Authenticate"):
+        console.print(f"[-] Http Error: 401 Client Error: Unauthorized for url: {r2}", style="NOK")
+        console.print(f"    [+] Www-Authenticate Header Found : {r.headers.get("Www-Authenticate")}", style="OK")
+        realm = re.search('realm="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
+        service=re.search('service="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
+        scope=re.search('scope="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
+        console.print(f"    [~] Trying to authenticate on Realm : {realm}", style="MOK")
+        url_auth = f"{realm}?service={service}&scope={scope}"
+        auth = req.get(url_auth, verify=False)
+        if auth.status_code == 200:
+            console.print(f"    [+] Authentication success", style="OK")
+            jwt_list = re.findall(r'"access_token":"([^"]+)"', auth.text)
+            args = manageArgs()
+            for i in jwt_list:
+                args.header = i
+                if args.list:
+                    enumList(args.url, args.port, args.username, args.password, args.header)
+                elif args.dump_all:
+                    dumpAll(args)
+                elif args.dump:
+                    dump(args)
+        else:
+            console.print(f"    [-] Authentication failed", style="NOK")
+        sys.exit(1)
+
 def tryReq(url, username=None, password=None, header=None):
     try:
         if header and username and password:
             auth = {"Authorization": "Bearer " + header}
             r = req.get(url, verify=False, auth=(username, password), headers=auth)
+            checkUnauthorized(r, url)
             r.raise_for_status()
         elif username and password:
             r = req.get(url, verify=False, auth=(username, password))
+            checkUnauthorized(r, url)
             r.raise_for_status()
         elif header:
             auth = {"Authorization": "Bearer " + header}
             r = req.get(url, verify=False, headers=auth)
+            checkUnauthorized(r, url)
             r.raise_for_status()
         else:
             r = req.get(url, verify=False)
+            checkUnauthorized(r, url)
             r.raise_for_status()
     except requests.exceptions.HTTPError as errh:
         console.print(f"Http Error: {errh}", style="NOK")
@@ -142,14 +173,14 @@ def options():
         dump(args)
 
 def manageArgs():
-    parser = argparse.ArgumentParser(description="""     ____   ____    ____ 
+    parser = argparse.ArgumentParser(description=r"""     ____   ____    ____
     |  _ \ |  _ \  / ___|
     | | | || |_) || |  _ 
     | |_| ||  _ < | |_| |
     |____/ |_| \_\ \____|
-     Docker Registry grabber tool v2 
+     Docker Registry grabber tool v2.1
      by @SyzikSecu""",
-     epilog="""
+     epilog=r"""
 Example commands:
   python drg.py http://127.0.0.1 --list
   python drg.py http://127.0.0.1 --dump my-ubuntu
@@ -183,3 +214,4 @@ if __name__ == "__main__":
     urllib3.disable_warnings()
     console = Console(theme=custom_theme)
     options()
+    
