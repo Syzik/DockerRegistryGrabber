@@ -34,7 +34,7 @@ def printList(dockerlist):
 def checkUnauthorized(r, r2=None):
     if r.status_code == 401 and r.headers.get("Www-Authenticate"):
         console.print(f"[-] Http Error: 401 Client Error: Unauthorized for url: {r2}", style="NOK")
-        console.print(f"    [+] Www-Authenticate Header Found : {r.headers.get("Www-Authenticate")}", style="OK")
+        console.print(f"    [+] Www-Authenticate Header Found : {r.headers.get('Www-Authenticate')}", style="OK")
         realm = re.search('realm="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
         service=re.search('service="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
         scope=re.search('scope="([^"]+)"', r.headers.get("Www-Authenticate")).group(1)
