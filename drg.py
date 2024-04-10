@@ -186,6 +186,7 @@ Example commands:
   python drg.py http://127.0.0.1 --dump my-ubuntu
   python drg.py http://127.0.0.1 --dump_all
   python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --list
+  python drg.py https://127.0.0.1 -p 443 -U 'testuser' -P 'testpassword' --list
   python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump my-ubuntu
   python drg.py https://127.0.0.1 -U 'testuser' -P 'testpassword' --dump_all
   python drg.py https://127.0.0.1 -A '<Auth BEARER TOKEN>' --list
